@@ -60,10 +60,13 @@ export const ConstructionDataPanel = () => {
   const header = parsedRows[0] || [];
   const rows = parsedRows.slice(1);
 
-  // Filter rows based on search
-  const filteredRows = searchFilter.trim() === ''
-    ? rows
-    : rows.filter(r => r.some(cell => String(cell).toLowerCase().includes(searchFilter.toLowerCase())));
+  // Filter rows based on search while preserving original row index
+  const filteredRowsWithIdx = rows
+    .map((row, originalIndex) => ({ row, originalIndex }))
+    .filter(({ row }) =>
+      searchFilter.trim() === '' ||
+      row.some(cell => String(cell).toLowerCase().includes(searchFilter.toLowerCase()))
+    );
 
   const handleCellChange = (rIdx, cIdx, val) => {
     const updatedRows = [...rows];
@@ -74,7 +77,16 @@ export const ConstructionDataPanel = () => {
   };
 
   const handleAddRow = () => {
+    setSearchFilter('');
     const newRow = new Array(header.length).fill('');
+    const firstCol = (header[0] || '').toLowerCase();
+    if (firstCol === 'code' || firstCol === 'config_no') {
+      const maxId = rows.reduce((max, r) => {
+        const val = parseInt(r[0], 10);
+        return !isNaN(val) && val > max ? val : max;
+      }, 0);
+      newRow[0] = String(maxId + 1);
+    }
     const newCsv = CSV.stringify([header, ...rows, newRow]);
     updateConstructionRaw(activeTableKey, newCsv);
   };
@@ -251,27 +263,27 @@ export const ConstructionDataPanel = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredRows.length === 0 ? (
+                {filteredRowsWithIdx.length === 0 ? (
                   <tr>
                     <td colSpan={header.length + 2} style={{ padding: '20px', color: 'var(--ink-muted)' }}>
                       No matching records found for &quot;{searchFilter}&quot;.
                     </td>
                   </tr>
                 ) : (
-                  filteredRows.map((row, rIdx) => (
-                    <tr key={rIdx}>
-                      <td style={{ color: 'var(--ink-muted)', fontSize: '11px', fontFamily: 'var(--mono)' }}>{rIdx + 1}</td>
+                  filteredRowsWithIdx.map(({ row, originalIndex }) => (
+                    <tr key={originalIndex}>
+                      <td style={{ color: 'var(--ink-muted)', fontSize: '11px', fontFamily: 'var(--mono)' }}>{originalIndex + 1}</td>
                       {header.map((_, cIdx) => (
                         <td key={cIdx}>
                           <input
                             type="text"
                             value={row[cIdx] ?? ''}
-                            onChange={(e) => handleCellChange(rIdx, cIdx, e.target.value)}
+                            onChange={(e) => handleCellChange(originalIndex, cIdx, e.target.value)}
                           />
                         </td>
                       ))}
                       <td>
-                        <button className="danger sm" onClick={() => handleDeleteRow(rIdx)} title="Delete row">
+                        <button className="danger sm" onClick={() => handleDeleteRow(originalIndex)} title="Delete row">
                           <Trash2 size={11} />
                         </button>
                       </td>

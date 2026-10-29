@@ -23,8 +23,8 @@ export const CSV = {
       }
     }
     if (field.length || row.length) { pushField(); pushRow(); }
-    // drop trailing empty row
-    while (rows.length && rows[rows.length - 1].every(f => f === '')) rows.pop();
+    // drop trailing empty line (single empty field from trailing newline)
+    while (rows.length && rows[rows.length - 1].length <= 1 && (rows[rows.length - 1][0] === '' || rows[rows.length - 1][0] === undefined)) rows.pop();
     return rows;
   },
 

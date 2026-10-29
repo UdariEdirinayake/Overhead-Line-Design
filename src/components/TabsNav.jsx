@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Layers, Sliders, Database, TableProperties, BarChart3, Check } from 'lucide-react';
+import { Layers, Sliders, Database, TableProperties, BarChart3, BookOpen, Check } from 'lucide-react';
 
 export const TabsNav = () => {
   const { activeTab, setActiveTab, results, lineRows } = useApp();
@@ -45,6 +45,14 @@ export const TabsNav = () => {
       subtitle: results ? 'Ready & Verified' : 'Awaiting Calculation',
       icon: BarChart3,
       completed: !!results
+    },
+    {
+      id: 'process',
+      num: 6,
+      title: 'Calculation Process',
+      subtitle: results ? 'Live Ran Example' : 'Educational Flow',
+      icon: BookOpen,
+      completed: true
     }
   ];
 

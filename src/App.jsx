@@ -7,6 +7,7 @@ import { DesignParametersPanel } from './components/panels/DesignParametersPanel
 import { ConstructionDataPanel } from './components/panels/ConstructionDataPanel';
 import { LineInputPanel } from './components/panels/LineInputPanel';
 import { ResultsPanel } from './components/panels/ResultsPanel';
+import { CalculationProcessPanel } from './components/panels/CalculationProcessPanel';
 import { SurveyModal } from './components/modals/SurveyModal';
 import { SpurModal } from './components/modals/SpurModal';
 
@@ -27,6 +28,7 @@ const MainContent = () => {
         {activeTab === 'construction' && <ConstructionDataPanel />}
         {activeTab === 'line' && <LineInputPanel />}
         {activeTab === 'results' && <ResultsPanel />}
+        {activeTab === 'process' && <CalculationProcessPanel />}
       </main>
 
       <footer className="no-print">

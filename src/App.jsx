@@ -14,6 +14,35 @@ import { SpurModal } from './components/modals/SpurModal';
 import './styles/theme.css';
 import './styles/app.css';
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '40px 24px', maxWidth: '640px', margin: '40px auto', textAlign: 'center' }} className="card">
+          <h2 style={{ color: 'var(--amber)', fontSize: '18px', marginBottom: '10px' }}>Notice: Tab encountered an error</h2>
+          <p style={{ color: 'var(--ink-dim)', fontSize: '13px', marginBottom: '20px' }}>
+            {this.state.error?.message || 'Unexpected issue displaying this panel.'}
+          </p>
+          <button className="primary" onClick={() => this.setState({ hasError: false })}>
+            Reload Tab
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const MainContent = () => {
   const { activeTab } = useApp();
 
@@ -23,12 +52,14 @@ const MainContent = () => {
       <TabsNav />
 
       <main>
-        {activeTab === 'settings' && <LineStructurePanel />}
-        {activeTab === 'design' && <DesignParametersPanel />}
-        {activeTab === 'construction' && <ConstructionDataPanel />}
-        {activeTab === 'line' && <LineInputPanel />}
-        {activeTab === 'results' && <ResultsPanel />}
-        {activeTab === 'process' && <CalculationProcessPanel />}
+        <ErrorBoundary key={activeTab}>
+          {activeTab === 'settings' && <LineStructurePanel />}
+          {activeTab === 'design' && <DesignParametersPanel />}
+          {activeTab === 'construction' && <ConstructionDataPanel />}
+          {activeTab === 'line' && <LineInputPanel />}
+          {activeTab === 'results' && <ResultsPanel />}
+          {activeTab === 'process' && <CalculationProcessPanel />}
+        </ErrorBoundary>
       </main>
 
       <footer className="no-print">

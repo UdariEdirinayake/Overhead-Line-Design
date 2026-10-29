@@ -27,7 +27,8 @@ export const CalculationProcessPanel = () => {
 
   const hasResults = !!(results && results.results && results.results.length > 0);
   const poleRows = hasResults ? results.results : [];
-  const currentPole = hasResults && poleRows[selectedPoleIdx] ? poleRows[selectedPoleIdx] : null;
+  const safeIdx = Math.min(Math.max(0, selectedPoleIdx), Math.max(0, poleRows.length - 1));
+  const currentPole = hasResults && poleRows[safeIdx] ? poleRows[safeIdx] : null;
 
   // Retrieve parsed catalog data for context
   const data = getParsedData();
@@ -632,7 +633,7 @@ export const CalculationProcessPanel = () => {
             </div>
             &bull; Recommended Pole: <strong style={{ color: 'var(--ok)', fontSize: '14px' }}>{currentPole.recommended}</strong> (Economical: {currentPole.most_economic || currentPole.recommended})<br />
             &bull; Guy / Stay Arrangement: <strong>{currentPole.guy_arrangement || 'Unguyed'}</strong><br />
-            &bull; Foundation Type: <strong>{typeof currentPole.foundation === 'object' ? `${currentPole.foundation.foundation_recommendation || 'Type A'} (Soil Class ${currentPole.soil || currentPole.foundation.soil_class || '4'}, Embedment: ${currentPole.foundation.embedment_m ? currentPole.foundation.embedment_m.toFixed(2) : '1.83'}m)` : (currentPole.foundation || 'Standard Embedment')}</strong><br />
+            &bull; Foundation Type: <strong>{currentPole.foundation && typeof currentPole.foundation === 'object' ? `${currentPole.foundation.foundation_recommendation || 'Type A'} (Soil Class ${currentPole.soil || currentPole.foundation.soil_class || '4'}, Embedment: ${currentPole.foundation.embedment_m ? Number(currentPole.foundation.embedment_m).toFixed(2) : '1.83'}m)` : (String(currentPole.foundation || 'Standard Embedment'))}</strong><br />
             &bull; Ruling Stringing Sag at 27&deg;C: <strong>{sag27.toFixed(3)} m</strong> (Tension: {mainTen.toFixed(3)} kN)
           </div>
         </div>
